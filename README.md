@@ -6,7 +6,8 @@
 **Due:** **28 June 2026, EOD (11:59 PM)**
 **Weight:** 100 marks (+ up to 10 bonus)
 
-> **Watch the 45-second brief:** [`LaunchLens-brief.mp4`](./LaunchLens-brief.mp4) (the problem, what to build, and the deadline in under a minute).
+> **▶ Watch the 60-second brief:** **[play it on the Releases page](https://github.com/fnusatvik07/agentbuilder-assignment3/releases/tag/v1.0)** or [download `LaunchLens-brief.mp4`](./LaunchLens-brief.mp4).
+> (GitHub can't stream a video stored inside a repo, so use the Releases link to watch it in the browser, or download the file.)
 
 ---
 
@@ -19,6 +20,42 @@ You are the founding engineer of a startup. Here is the pitch your founder walks
 Your job is to build **LaunchLens** from scratch as a standalone product.
 
 > **This is a fixed brief, not an open-ended hackathon.** Everyone builds the same product (LaunchLens) so we grade *engineering*, not who had the cleverest idea. Your creativity goes into *how well you build it* - the graph design, the data fusion, the code quality, the presentation.
+
+---
+
+## ✅ In plain terms: exactly what to build and submit
+
+Read this part first. The rest of the document is the detailed version of these same bullets.
+
+**What you are building (one line):** a command-line chat agent called **LaunchLens**. A founder types a product idea, your agent researches it live, and replies with a **Go / No-Go / Niche** verdict, then keeps chatting with memory of the conversation.
+
+### A. Your agent must do all of these
+- [ ] Take a founder's product question in plain English, in a **CLI chat loop**.
+- [ ] Pull **demand** data from **SerpApi** (use at least **2** of: Google Trends, Google Shopping, Google News, Google Search).
+- [ ] Pull **supply** data from **Oxylabs** (use at least **2** of: `amazon_search`, `amazon_product`, `amazon_pricing`, `amazon_bestsellers`, reviews).
+- [ ] **Fuse both sides** in the agent's reasoning - one combined answer, not two separate features.
+- [ ] Output a clear **Go / No-Go / Niche** verdict covering demand, price band, and positioning.
+- [ ] **Remember the conversation** across turns, and **summarize** it once it gets long.
+
+### B. Your LangGraph graph must contain all 5 (this is 45 of 100 marks)
+- [ ] **Graph + state** - a typed `StateGraph` with clean `START -> ... -> END` wiring.
+- [ ] **Routing** - conditional edges that pick a path based on the user's intent.
+- [ ] **Fan-out** - parallel nodes that run at the same time, then merge their results.
+- [ ] **Agent node + tools** - an LLM agent with SerpApi and Oxylabs wrapped as tools.
+- [ ] **Short-term memory** - a checkpointer **plus** a summarization node.
+
+### C. What to submit (one public GitHub repo, by 28 June EOD)
+- [ ] **Working code** that runs from your README (CLI is enough).
+- [ ] **README** with: setup steps, a **concept map** (file + function + line for each of the 5 concepts above), and 3-6 demo prompts.
+- [ ] **`.env.example`** listing required keys (never commit real keys).
+- [ ] A **graph diagram** (drawn, ASCII, or `graph.get_graph().draw_mermaid()`).
+- [ ] **Slides** (PDF / PPT / Google Slides) explaining the product and architecture.
+- [ ] A **2-minute screen-recorded demo video** that explains LaunchLens and shows it running, including memory across turns.
+- [ ] **`SUBMISSION.md`** - copy [`SUBMISSION_TEMPLATE.md`](./SUBMISSION_TEMPLATE.md), fill it in.
+
+**How to hand in:** reply on the assignment thread with your public repo link before **28 June 2026, 11:59 PM**.
+
+> If you can tick every box above, you have done the assignment. Everything below is detail and examples.
 
 ---
 
