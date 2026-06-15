@@ -1,0 +1,8 @@
+# deps & caches
+node_modules/
+video/node_modules/
+video/.hyperframes/
+video/capture/
+# os / editor
+.DS_Store
+*.log
