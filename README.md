@@ -17,36 +17,7 @@ LaunchLens is an advanced, production-grade conversational AI analyst built on *
 
 LaunchLens uses a stateful cyclic graph with parallel scanning capabilities and intent-based routing to maximize analysis speed and accuracy.
 
-```mermaid
-flowchart TD
-    U([Founder Query / Chat]) --> S[Summarize Node]
-    
-    subgraph Memory & State Persistence
-        S
-        CP[("Checkpointer Store\n(PostgreSQL / SQLite fallback)")]
-    end
-
-    S --> R{Intent Classifier}
-    
-    subgraph Parallel Research Scan (Fan-Out)
-        R -->|Intent: Research| DN[Demand Analyst Node\n(SerpApi)]
-        R -->|Intent: Research| SN[Supply Analyst Node\n(Oxylabs)]
-    end
-
-    R -->|Intent: Chat / Follow-up| AG[Core Agent Node\n(GPT-4o-mini)]
-
-    DN --> AG
-    SN --> AG
-
-    subgraph Cyclic Tool Executions
-        AG <-->|Condition: Calls Tools| TL["Tool Runner Node\n- google_trends_tool\n- google_news_tool\n- amazon_search_tool\n- amazon_reviews_tool"]
-    end
-    
-    AG -->|Condition: Final Response| V[Go/No-Go/Niche Verdict] --> E([END])
-    
-    CP -.->|Saves state after each step| S
-    CP -.->|Loads & saves state| AG
-```
+![LaunchLens Architecture](graph_output/graph.png)
 
 ### Flow Execution Breakdown
 1. **Entry Point & Summarization**: Incoming user messages pass through the `Summarize Node` which prunes and condenses the thread if the length exceeds 12 turns.
