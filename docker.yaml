@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  # 1. Postgres database container for persistent checkpointer state
+  db:
+    image: postgres:16-alpine
+    container_name: launchlens-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: launchlens
+    ports:
+      - "5442:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d launchlens"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. PGWeb: Web-based Visual Database Admin Console
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: launchlens-pgweb
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/launchlens?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. FastAPI Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: launchlens-backend
+    restart: always
+    ports:
+      - "8010:8010"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_URI=postgresql://postgres:postgres@db:5432/launchlens?sslmode=disable
+      - SQLITE_DB_PATH=/app/data/checkpoints.sqlite
+    volumes:
+      - .:/app
+      - backend_data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 4. React Vite Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: launchlens-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  backend_data:

@@ -6,8 +6,22 @@ video/capture/
 # os / editor
 .DS_Store
 *.log
-
+.env
+oxylabs code snippet.txt
 # thumbnail render tooling
 thumb/frames/
 thumb/.hyperframes/
 thumb/node_modules/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local databases and SQLite WAL files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data/

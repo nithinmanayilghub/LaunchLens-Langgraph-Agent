@@ -1,0 +1,8 @@
+.venv/
+.git/
+__pycache__/
+*.sqlite*
+*.log
+node_modules/
+frontend/node_modules/
+frontend/dist/

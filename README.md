@@ -9,7 +9,7 @@
 > ### 🌐 Landing page: **https://fnusatvik07.github.io/agentbuilder-assignment3/**
 > The full brief with the embedded video and tabs (Problem · Build · Architecture · Data · Grading · Submit). Start there.
 >
-> **▶ Watch the 60-second brief:** on the [landing page](https://fnusatvik07.github.io/agentbuilder-assignment3/), the [Releases page](https://github.com/fnusatvik07/agentbuilder-assignment3/releases/tag/v1.0), or [download `LaunchLens-brief.mp4`](./LaunchLens-brief.mp4).
+> **▶ Watch the 60-second brief:** on the [landing page](https://fnusatvik07.github.io/agentbuilder-assignment3/), the [Releases page](https://github.com/fnusatvik07/agentbuilder-assignment3/releases/tag/v1.0), or [download `LaunchLens-brief.mp4`](./docs/LaunchLens-brief.mp4).
 
 ---
 

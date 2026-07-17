@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-purple: #6C4DFF;
+  --color-bg-navy: #0B1020;
+  --color-bg-card: #131A2E;
+  --color-border-subtle: #232B45;
+  --color-purple-glow: rgba(108, 77, 255, 0.15);
+}
+
+@layer base {
+  body {
+    background-color: #0B1020;
+    color: #f1f5f9;
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  /* Modern slim scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0B1020;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #232B45;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6C4DFF;
+  }
+}
+
+/* Animations and Utilities */
+@keyframes card-glow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(108, 77, 255, 0.05); }
+  50% { box-shadow: 0 4px 30px rgba(108, 77, 255, 0.15); }
+}
+
+.card-glow-anim {
+  animation: card-glow 4s infinite ease-in-out;
+}
+
+@keyframes text-shine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.text-gradient-shine {
+  background: linear-gradient(to right, #ffffff, #6C4DFF, #a5b4fc, #ffffff);
+  background-size: 200% auto;
+  animation: text-shine 6s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

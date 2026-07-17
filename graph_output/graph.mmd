@@ -1,0 +1,34 @@
+flowchart TD
+    U([Founder asks a question]) --> S
+
+    S["summarize node\nSHORT-TERM MEMORY:\ncompress long chats"] --> R
+
+    R{"router\nROUTING:\nclassify the ask"}
+    R -->|demand| D["demand branch\n(Google Trends)"]
+    R -->|pricing| P["pricing branch\n(Shopping + Amazon)"]
+    R -->|full report| F["full report branch\nFAN-OUT: parallel pulls"]
+
+    F --> FT["Google Trends"]
+    F --> FA["Amazon (Oxylabs)"]
+    F --> FN["Google News"]
+
+    D --> AG
+    P --> AG
+    FT --> AG
+    FA --> AG
+    FN --> AG
+
+    AG["agent node\nAGENT + TOOLS loop"]
+    AG <-->|calls tools| TL["Tools:\nSerpApi (Trends, Shopping, News)\nOxylabs (search, product, pricing, reviews)"]
+    AG --> V["Go / No-Go / Niche verdict"] --> E([END])
+
+    CP[("Checkpointer\nSQLite / Postgres")] -.->|state saved after every node| AG
+
+    classDef mem fill:#e8f0fe,stroke:#1a73e8,color:#1a3a6b;
+    classDef route fill:#fef7e0,stroke:#f9ab00,color:#5f4500;
+    classDef fan fill:#e6f4ea,stroke:#34a853,color:#0b5132;
+    classDef agent fill:#fce8e6,stroke:#ea4335,color:#5f1b14;
+    class S,CP mem;
+    class R route;
+    class F,FT,FA,FN fan;
+    class AG,TL agent;
