@@ -1,21 +1,21 @@
 # 🔭 LaunchLens: Enterprise Market Intelligence Agent
 
-LaunchLens is an advanced, production-grade conversational AI analyst built with **LangGraph** to fuse real-time Google search demand signals with Amazon supply reality. It helps entrepreneurs and product managers validate business ideas through data-driven feasibility scores, market risk matrices, and product positioning strategies.
+LaunchLens is an advanced, production-grade conversational AI analyst built on **LangGraph**. It bridges the gap between consumer demand signals (Google search volume, trends, and news) and marketplace supply reality (Amazon pricing, brand dominance, and customer sentiment) to provide founders with automated, data-driven feasibility analysis.
 
 ---
 
-## ⚡ Quick Capabilities Overview
+## ⚡ Key Capabilities
 
-- **Demand Validation (Google Trends & News)**: Dynamically checks query interest trajectories, related breakout searches, and recent news alerts via SerpApi.
-- **Supply Reality (Amazon Scrape & Mining)**: Gathers pricing structures, brand dominance, star ratings, and parses reviews to mine customer pain points via Oxylabs.
-- **Fused Feasibility Verdicts**: Unifies demand and supply insights to deliver a structured **Go / No-Go / Niche** verdict with clear differentiation vectors.
-- **Short-Term Memory & Auto-Summarization**: Employs persistent checkpointers to preserve conversation context while automatically compressing histories over 12 turns to prevent context window overflow.
+* **Demand Trajectory (SerpApi)**: Evaluates query interest over time, identifies breakout queries, and scans google news for competitor events.
+* **Supply Mapping (Oxylabs)**: Analyzes best-selling products, pricing spreads, star ratings, and mines customer reviews to extract pain points.
+* **Dual-Engine Fusion**: Integrates both data streams into a unified reasoning loop to deliver a structured **Go / No-Go / Niche** verdict.
+* **Short-Term Memory & Summarization**: Preserves chat context across multiple turns using persistent database checkpointers, automatically summarizing history past 12 messages.
 
 ---
 
 ## 🏗️ Architecture & Data Flow
 
-LaunchLens utilizes a stateful, cyclic graph with parallel execution branches (fan-out) and intent-based routing.
+LaunchLens uses a stateful cyclic graph with parallel scanning capabilities and intent-based routing to maximize analysis speed and accuracy.
 
 ```mermaid
 flowchart TD
@@ -48,19 +48,12 @@ flowchart TD
     CP -.->|Loads & saves state| AG
 ```
 
----
-
-## 🗺️ LangGraph Concept Map
-
-The table below maps the required LangGraph engineering concepts to their implementation inside the codebase:
-
-| Core Concept | Code Reference | Technical Description |
-| :--- | :--- | :--- |
-| **1. Graph Construction & State** | [`backend/graph.py` (Lines 21-23)](backend/graph.py#L21-L23)<br>[`backend/graph.py` (Lines 315-386)](backend/graph.py#L315-L386) | Defines the typed `State` schema using standard LangChain message buffers and compiles the graph topology. |
-| **2. Fan-out (Parallel Execution)** | [`backend/graph.py` (Lines 306-307)](backend/graph.py#L306-L307)<br>[`backend/graph.py` (Lines 344-345)](backend/graph.py#L344-L345) | Concurrently fires `demand_node` and `supply_node` to research Google and Amazon trends simultaneously, merging outputs on fan-in. |
-| **3. Routing (Conditional Edges)** | [`backend/graph.py` (Lines 267-313)](backend/graph.py#L267-L313)<br>[`backend/graph.py` (Lines 333-341)](backend/graph.py#L333-L341) | Evaluates user input via an LLM intent routing node, classifying queries into a `research` scan or a `chat` dialogue. |
-| **4. Agent Node & Tools** | [`backend/graph.py` (Lines 209-229)](backend/graph.py#L209-L229)<br>[`backend/tools.py` (Lines 10-44)](backend/tools.py#L10-L44)<br>[`backend/graph.py` (Lines 348-351)](backend/graph.py#L348-L351) | Runs the primary analyst node in a cyclic loop with tool callers, wrapping API endpoints as LangChain tools. |
-| **5. Short-Term Memory** | [`backend/graph.py` (Lines 231-265)](backend/graph.py#L231-L265)<br>[`backend/graph.py` (Lines 360-383)](backend/graph.py#L360-L383) | Persists sessions over restarts via PostgreSQL/SQLite savers, running a custom summarization node that compacts old message arrays. |
+### Flow Execution Breakdown
+1. **Entry Point & Summarization**: Incoming user messages pass through the `Summarize Node` which prunes and condenses the thread if the length exceeds 12 turns.
+2. **Intent Classification (Routing)**: An LLM-powered router checks if the prompt requires a new product research scan (`research`) or if it is a follow-up conversation (`chat`).
+3. **Parallel Scanning (Fan-Out)**: If a new scan is triggered, the engine fires parallel nodes to query search trends and Amazon listings simultaneously, reducing latencies significantly.
+4. **Core Reasoning Loop (Agent & Tools)**: The agent integrates the gathered insights. If it needs deeper details (e.g. review mining for an ASIN), it invokes local tools in a cyclic loop.
+5. **Verdict Generation**: A final structured synthesis is generated containing pricing recommendations, risk matrices, and a final market validation score.
 
 ---
 
@@ -68,13 +61,13 @@ The table below maps the required LangGraph engineering concepts to their implem
 
 ### Prerequisites
 - Python `3.12`
-- Node.js `18+` (Optional, for frontend web view)
-- API Keys:
+- Node.js `18+` (Optional, for web-based frontend)
+- API Credentials:
   - `OPENAI_API_KEY` (Required)
-  - `SERP_API_KEY` (Optional; system falls back to mock mode if omitted)
-  - `OXYLABS_USERNAME` & `OXYLABS_PASSWORD` (Optional; system falls back to mock mode if omitted)
+  - `SERP_API_KEY` (Optional; runs in mock mode if omitted)
+  - `OXYLABS_USERNAME` & `OXYLABS_PASSWORD` (Optional; runs in mock mode if omitted)
 
-### Option A: Local Run (Recommended)
+### Option A: Local Execution (Recommended)
 
 1. **Clone & Navigate**
    ```bash
@@ -83,45 +76,44 @@ The table below maps the required LangGraph engineering concepts to their implem
    ```
 
 2. **Configure Environment**
-   Create a `.env` file in the root directory:
+   Copy the example environment file and insert your keys (at minimum, `OPENAI_API_KEY`):
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and fill in your keys (at minimum, `OPENAI_API_KEY`).
 
 3. **Install Dependencies**
-   LaunchLens uses `uv` for virtual environment setup:
+   LaunchLens uses `uv` for fast python packaging:
    ```bash
-   # Install uv if not already present
+   # Install uv if missing
    pip install uv
    
-   # Synchronize packages from lockfile
+   # Setup virtual env and synchronize lockfile
    uv sync
    ```
 
-4. **Run the Interactive CLI REPL**
+4. **Run the Interactive CLI**
    ```bash
    uv run python backend/cli.py chat
    ```
 
-5. **Start Web Application**
-   - Run the FastAPI backend:
+5. **Run the Web App**
+   - Start the backend FastAPI server:
      ```bash
      uv run python backend/cli.py serve --port 8010
      ```
-   - In a new terminal window, boot the React frontend:
+   - In a new terminal, boot the React frontend:
      ```bash
      cd frontend
      npm install
      npm run dev
      ```
-     Access the web portal at `http://localhost:5173`.
+     Open `http://localhost:5173` in your browser.
 
 ---
 
-### Option B: Run via Docker Compose
+### Option B: Docker Compose
 
-To spin up the backend, frontend, and a PostgreSQL checkpointer database concurrently:
+To spin up the API backend, React frontend, and a PostgreSQL checkpointer database concurrently:
 
 ```bash
 docker-compose -f docker.yaml up --build
@@ -133,29 +125,29 @@ docker-compose -f docker.yaml up --build
 
 ## 💬 Verification Prompts
 
-You can test LaunchLens' workflow features in the CLI or Web UI using these paths:
+You can verify the system workflows using the following scenario steps in either the CLI REPL or Web UI:
 
-1. **Deep Research Trigger (Fan-Out & Routing)**
+1. **Scenario 1: Market Feasibility Scan (Fan-Out & Routing)**
    > **User:** *"I want to launch a stainless-steel insulated water bottle in India under ₹1,500 - is it worth it?"*
-   - *Expected Behavior*: Classified as `research` -> triggers parallel Google Trends/News + Amazon Search queries -> compiles structured analysis, pricing metrics, and outputs a **Go/No-Go/Niche** verdict.
-   
-2. **Context Memory & Follow-up**
-   > **User:** *"What about the US market? How does the competitor landscape compare?"*
-   - *Expected Behavior*: Classified as `chat` -> retrieves previous history from checkpointer -> merges context to perform new comparative calculations for the US.
+   - *Behavior*: Routes to `research` -> Concurrently scrapes Amazon and Google Trends -> Returns pricing analytics, consumer pain points, and a structured **Go/No-Go** verdict.
 
-3. **Context Condensation Node**
-   > Continue chatting past 12 turns.
-   - *Expected Behavior*: The `summarize` node runs automatically, truncating the message history while compressing key facts into the graph's `summary` state.
+2. **Scenario 2: Context Preservation & Follow-up**
+   > **User:** *"What about the US market? How does the pricing map there?"*
+   - *Behavior*: Routes to `chat` -> Retrieves preceding India metrics from memory -> Computes comparative analytics for the US.
+
+3. **Scenario 3: Memory Summarization**
+   > Continue chatting past 12 messages.
+   - *Behavior*: Automatically compresses older turns to keep the LLM context window clean, keeping key findings in the summary state.
 
 ---
 
-## ⚙️ Env Configuration Options
+## ⚙️ Environment Variables
 
-| Variable Name | Default / Type | Purpose |
+| Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
-| `OPENAI_API_KEY` | `sk-...` | Triggers GPT-4o-mini agent reasoning and summaries. |
-| `SERP_API_KEY` | `string` | Query authorization for Google Trends, Shopping, and News. (Mocked if empty). |
-| `OXYLABS_USERNAME` | `string` | Username for Oxylabs E-Commerce API (Mocked if empty). |
-| `OXYLABS_PASSWORD` | `string` | Password for Oxylabs E-Commerce API. |
-| `SQLITE_DB_PATH` | `checkpoints.sqlite` | Location for local SQLite checkpoint file database. |
-| `POSTGRES_URI` | `string` | Postgres connection string (Automatically falls back to SQLite if absent). |
+| `OPENAI_API_KEY` | `sk-...` | OpenAI credentials for model invocation. |
+| `SERP_API_KEY` | `""` | Key for Google Search trends and shopping (mocked if empty). |
+| `OXYLABS_USERNAME` | `""` | Oxylabs E-commerce scraping credentials (mocked if empty). |
+| `OXYLABS_PASSWORD` | `""` | Oxylabs credentials password. |
+| `SQLITE_DB_PATH` | `checkpoints.sqlite` | Filepath for local SQLite checkpointer. |
+| `POSTGRES_URI` | `""` | Connection string for Postgres checkpointer pool. |
